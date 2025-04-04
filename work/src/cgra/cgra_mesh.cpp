@@ -15,8 +15,10 @@ namespace cgra {
 		if (vao == 0) return;
 		// bind our VAO which sets up all our buffers and data for us
 		glBindVertexArray(vao);
+		glDrawElementsInstanced(mode, index_count, GL_UNSIGNED_INT, 0, 100);
+		glBindVertexArray(0);
 		// tell opengl to draw our VAO using the draw mode and how many verticies to render
-		glDrawElements(mode, index_count, GL_UNSIGNED_INT, 0);
+		//glDrawElements(mode, index_count, GL_UNSIGNED_INT, 0);
 	}
 
 	void gl_mesh::destroy() {
@@ -58,6 +60,14 @@ namespace cgra {
 		// do the same thing for UVs but bind it to location=2 - the data is treated in lots of 2 (2 floats = vec2)
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(mesh_vertex), (void *)(offsetof(mesh_vertex, uv)));
+
+		glEnableVertexAttribArray(3); //layout(location = 3) in vec2 aOffset
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+		glVertexAttribDivisor(3, 1); // Tells OpenGL to advance this per-instance
+
+
+		glVertexAttribDivisor(4, 1); // Instance data (rotations)
+		glEnableVertexAttribArray(4);  // Rotations
 
 
 		// IBO

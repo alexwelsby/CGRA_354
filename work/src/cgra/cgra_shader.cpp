@@ -10,6 +10,8 @@
 #include "cgra_shader.hpp"
 #include <opengl.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 
 // forward declaration
 class shader_error : public std::runtime_error {
@@ -81,6 +83,8 @@ namespace cgra {
 			throw e;
 		}
 	}
+
+
 
 
 	void shader_builder::set_shader_source(GLenum type, const std::string &source) {

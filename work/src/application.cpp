@@ -45,6 +45,7 @@ Application::Application(GLFWwindow *window) : m_window(window) {
 	m_model.mesh = teapot_mesh;
 	m_model.color = glm::vec3(1, 0, 0);
 	m_model.modelTransform = glm::mat4(1);
+
 }
 
 
@@ -70,6 +71,9 @@ void Application::render() {
 	mat4 yaw = glm::rotate(mat4(1), m_yaw, vec3(0, 1, 0));
 	mat4 pitch = glm::rotate(mat4(1), m_pitch, vec3(1, 0, 0));
 	mat4 view = translate(mat4(1), vec3(0, -5, -m_distance)); // TODO replace view matrix with the camera transform
+
+	
+	
 
 	// draw options
 	if (m_show_grid) cgra::drawGrid(view, proj);
@@ -123,8 +127,8 @@ void Application::cursorPosCallback(double xpos, double ypos) {
 	if (m_button_pressed) {
 		double deltaX = (xpos - mouse_X) * 0.01;
 		double deltaY = (ypos - mouse_Y) * 0.01;
-		m_yaw = clamp(float(m_yaw+deltaX), SLIDER_LOWER_BOUND, ROTATE_UPPER_BOUND);
-		m_pitch = clamp(float(m_pitch + deltaY), SLIDER_LOWER_BOUND, ROTATE_UPPER_BOUND);
+		m_yaw = std::clamp(float(m_yaw+deltaX), SLIDER_LOWER_BOUND, ROTATE_UPPER_BOUND);
+		m_pitch = std::clamp(float(m_pitch + deltaY), SLIDER_LOWER_BOUND, ROTATE_UPPER_BOUND);
 	}
 	mouse_X = xpos;
 	mouse_Y = ypos;
@@ -148,7 +152,7 @@ void Application::scrollCallback(double xoffset, double yoffset) {
 
 	m_distance += yoffset*2;
 
-	m_distance = clamp(m_distance, SLIDER_LOWER_BOUND, DISTANCE_UPPER_BOUND);
+	m_distance = std::clamp(m_distance, SLIDER_LOWER_BOUND, DISTANCE_UPPER_BOUND);
 	(void)xoffset, yoffset; // currently un-used
 }
 
