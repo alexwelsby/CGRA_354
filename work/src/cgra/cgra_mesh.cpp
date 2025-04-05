@@ -65,7 +65,7 @@ namespace cgra {
 		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
 		glVertexAttribDivisor(3, 1); // Tells OpenGL to advance this per-instance
 
-
+		//glVertexAttribPointer(4, 16, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 		glVertexAttribDivisor(4, 1); // Instance data (rotations)
 		glEnableVertexAttribArray(4);  // Rotations
 

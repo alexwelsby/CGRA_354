@@ -46,6 +46,37 @@ Application::Application(GLFWwindow *window) : m_window(window) {
 	m_model.color = glm::vec3(1, 0, 0);
 	m_model.modelTransform = glm::mat4(1);
 
+	for (int i = 0; i < 100; ++i) {
+		int transX = (rand() % 100) - 50;
+		int transY = (rand() % 100) - 50;
+		int transZ = (rand() % 100) - 50;
+		int distance = rand() % 101;
+		std::random_device rd;  // Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dis(1.0, 6.25);
+		std::uniform_real_distribution<float> scale_dis(0.0f, 1.0f);
+		float r = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
+		float g = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
+		float b = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
+
+		float yaw_angle = dis(gen);
+		float pitch_angle = dis(gen);
+		float scale = scale_dis(gen);
+
+		m_model.instanceColors.emplace_back(glm::vec3(r, g, b));
+		m_model.instanceOffsets.emplace_back(glm::vec3(transX, transY, transZ));
+		//instance rotations is a randomly generated yaw/pitch/
+
+		r = 1.0;
+		mat4 yaw = glm::rotate(mat4(1), yaw_angle, vec3(0, 1, 0));
+		mat4 pitch = glm::rotate(mat4(1), pitch_angle, vec3(1, 0, 0));
+		mat4 view = glm::translate(mat4(1), vec3(0, -5, -distance));
+		m_model.instanceRotations.emplace_back(glm::mat4(view * pitch * yaw * scale));
+		m_model.instanceRotations[i] *= m_model.modelTransform;
+
+	}
+	m_model.init_texture("3.png");
+
 }
 
 

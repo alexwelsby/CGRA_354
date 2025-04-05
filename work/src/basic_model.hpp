@@ -1,6 +1,8 @@
 
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
+#include <filesystem>
+#include "stb_image.h"
 // glm
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -47,34 +49,6 @@ struct basic_model {
 		glUniformMatrix4fv(glGetUniformLocation(shader, "uModelViewMatrix"), 1, false, value_ptr(modelview));
 		glUniform3fv(glGetUniformLocation(shader, "uColor"), 1, value_ptr(color));
 
-
-
-		for (int i = 0; i < 100; ++i) {
-			int transX = (rand() % 100) - 50;
-			int transY = (rand() % 100) - 50;
-			int transZ = (rand() % 100) - 50;
-			int distance = rand() % 101;
-			std::random_device rd;  // Will be used to obtain a seed for the random number engine
-			std::mt19937 gen(rd());
-			std::uniform_real_distribution<> dis(1.0, 6.25);
-			float r = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
-			float g = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
-			float b = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
-
-			instanceColors.emplace_back(glm::vec3(r, g, b));
-			instanceOffsets.emplace_back(glm::vec3(transX, transY, transZ));
-			//instance rotations is a randomly generated yaw/pitch/
-
-			r = 1.0;
-			mat4 yaw = glm::rotate(mat4(1), r, vec3(0, 1, 0));
-			mat4 pitch = glm::rotate(mat4(1), r, vec3(1, 0, 0));
-			mat4 view = glm::translate(mat4(1), vec3(0, -5, -r));
-			instanceRotations.emplace_back(glm::mat4(view * pitch * yaw));
-			instanceRotations[i] *= modelTransform;
-
-		}
-		std::cout << to_string(instanceRotations[1]) << "," << to_string(modelview) << std::endl;
-
 		GLuint offsets = glGetUniformLocation(shader, "offsets");
 		glUniform3fv(offsets, 100, value_ptr(instanceOffsets[0]));
 
@@ -82,7 +56,7 @@ struct basic_model {
 		glUniform3fv(colors, 100, glm::value_ptr(instanceColors[0]));
 
 		GLuint rotations = glGetUniformLocation(shader, "rotations");
-		glUniformMatrix4fv(glGetUniformLocation(shader, "rotations"), 1, false, value_ptr(instanceRotations[0]));
+		glUniformMatrix4fv(glGetUniformLocation(shader, "rotations"), 100, false, value_ptr(instanceRotations[0]));
 
 		//phong stuff
 		glUniform3fv(glGetUniformLocation(shader, "uAmbColor"), 1, value_ptr(ambColor));
@@ -96,4 +70,33 @@ struct basic_model {
 		// draw the mesh
 		mesh.draw(); 
 	}
+
+	void init_texture(const std::string& filepath) {
+
+		//creating one openGL texture
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		//set texture wrapping/filtering options (on currently bound texture object)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		//load/generate texture
+		int width, height, nrChannels;
+		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else
+		{
+			std::cout << "Failed to load texture" << std::endl;
+		}
+
+		stbi_image_free(data);
+	}
+
 };
