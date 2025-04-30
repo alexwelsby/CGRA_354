@@ -75,7 +75,7 @@ Application::Application(GLFWwindow *window) : m_window(window) {
 		m_model.instanceRotations[i] *= m_model.modelTransform;
 
 	}
-	m_model.init_texture("3.png");
+	m_model.init_texture("wall.jpg");
 
 }
 
